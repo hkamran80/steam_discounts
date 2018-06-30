@@ -130,16 +130,16 @@ if __name__ == '__main__':
     import re
     import subprocess
     import sys
-    import urllib
-
+    #import urllib
+    import requests
+    
     # Constants.
     TITLE_WIDTH = 40
     MAX_BATCH_SIZE = 10
 
     # Get the number of discounts first.
-    conn = urllib.urlopen('http://store.steampowered.com/search/?specials=1')
-    page = conn.read()
-    conn.close()
+    conn = requests.get('http://store.steampowered.com/search/?specials=1')
+    page = conn.text
     mo = re.search(r'showing.*of +(\d+)', page)
     if mo is not None:
         max_discounts = int(mo.group(1))
@@ -159,10 +159,9 @@ if __name__ == '__main__':
             'style=&navcontext=1_4_4_&tab=Discounts&start=%d&count=%d' % \
             (obtained, batch_size)
 
-        conn = urllib.urlopen(discounts_url)
-        page = conn.read()
-        encoding = conn.headers.getparam('charset')
-        conn.close()
+        conn = requests.get(discounts_url)
+        page = conn.text
+        encoding = conn.headers['charset']
         page = page.decode(encoding)
 
         # Debug.
